@@ -16,3 +16,22 @@ variants:
       description_prefix: 'SOT-457T'
       additional_keywords: 'SOT-457T'
       datasheet: 'https://www.nxp.com/docs/en/package-information/SOT457.pdf'
+---
+# TSOP / SOT-457T SMD packages
+base:
+    series: SOT-23
+    family: SOT
+    description: 'SOT-23 SMD package'
+    keywords: 'SOT-23'
+    fab_x_mm: 1.8
+    #fab_y_mm: 3.1
+    pin_distance_x_mm: 2.2
+    pin_distance_y_mm: 0.95
+    pin_width_x_mm: 1.06
+    pin_width_y_mm: 0.65
+    distance_from_last_pin_to_fab_y_mm: 0.6
+variants:
+    - pins: 5
+      description_prefix: ''
+      additional_keywords: ''
+      datasheet: 'https://www.nxp.com/docs/en/package-information/SOT457.pdf'
