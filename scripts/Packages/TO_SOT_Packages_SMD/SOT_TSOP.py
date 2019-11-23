@@ -3,19 +3,11 @@ import os
 import argparse
 import yaml
 import pprint
+import copy
 
 sys.path.append(os.path.join(sys.path[0], "../../.."))  # enable package import from parent directory
 
 #from KicadModTree import *  # NOQA
-
-class Variant(object):
-
-    def __init__(self):
-        self.pins = 6
-        self.description_prefix = 'TSOP6'
-        self.additional_keywords = 'TSOP6'
-        self.datasheet = 'https://www.nxp.com/docs/en/package-information/SOT457.pdf'
-
 
 class Device(object):
 
@@ -32,14 +24,17 @@ class Device(object):
         self.name = 'TSOP'
         self.description = 'TSOP SMD package'
         self.keywords = 'TSOP'
-        self.fab_x_mm = 1.7
-        self.pin_distance_x_mm = 2.4
-        self.pin_distance_y_mm = 0.95
-        self.pin_width_x_mm = 0.7
-        self.pin_width_y_mm = 0.55
-        self.distance_from_last_pin_to_fab_y_mm = 0.5
-        # Variant list from config_file
-        self.variants = []
+        self.fab_x_mm = 0
+        self.pin_distance_x_mm = 0
+        self.pin_distance_y_mm = 0
+        self.pin_width_x_mm = 0
+        self.pin_width_y_mm = 0
+        self.distance_from_last_pin_to_fab_y_mm = 0
+        # Variant properties from config_file
+        self.pins = 0
+        self.description_prefix = 'TSOP6'
+        self.additional_keywords = 'TSOP6'
+        self.datasheet = 'https://www.nxp.com/docs/en/package-information/SOT457.pdf'
 
 class ConfigDeserializer(object):
 
@@ -58,39 +53,55 @@ class ConfigDeserializer(object):
             print(fnfe)
             return None
 
+    def __deserialize_single_value(self, device_config, value_key, default_value):
+        try: return device_config[value_key]
+        except KeyError: return default_value
+
     def __deserialize_config(self, config, device_list):
         for device_config in config:
             if not device_list or device_config['base']['family'] in device_list or device_config['base']['series'] in device_list:
                 device = Device()
-                self.__deserialize_device(device, device_config)
+                self.__deserialize_device(device, device_config['base'])
                 self.__deserialize_variants(device, device_config)
-                self.devices.append(device)
 
     def __deserialize_device(self, device, device_config):
-        base_config = device_config['base']
-        device.series = base_config['series']
-        device.description = base_config['description']
-        device.keywords = base_config['keywords']
-        device.fab_x_mm = base_config['fab_x_mm']
-        device.pin_distance_x_mm = base_config['pin_distance_x_mm']
-        device.pin_distance_y_mm = base_config['pin_distance_y_mm']
-        device.pin_width_x_mm = base_config['pin_width_x_mm']
-        device.pin_width_y_mm = base_config['pin_width_y_mm']
-        device.distance_from_last_pin_to_fab_y_mm = base_config['distance_from_last_pin_to_fab_y_mm']
+        # Base properties
+        device.series = self.__deserialize_single_value(device_config, 'series', device.series)
+        device.description = self.__deserialize_single_value(device_config, 'description', device.description)
+        device.keywords = self.__deserialize_single_value(device_config, 'keywords', device.keywords)
+        device.fab_x_mm = self.__deserialize_single_value(device_config, 'fab_x, mm', device.fab_x_mm)
+        device.pin_distance_x_mm = self.__deserialize_single_value(device_config, 'pin_distance_x_mm', device.pin_distance_x_mm)
+        device.pin_distance_y_mm = self.__deserialize_single_value(device_config, 'pin_distance_y_mm', device.pin_distance_y_mm)
+        device.pin_width_x_mm = self.__deserialize_single_value(device_config, 'pin_width_x_mm', device.pin_width_x_mm)
+        device.pin_width_y_mm = self.__deserialize_single_value(device_config, 'pin_width_y_mm', device.pin_width_y_mm)
+        device.distance_from_last_pin_to_fab_y_mm = self.__deserialize_single_value(device_config, 'distance_from_last_pin_to_fab_y_mm', device.distance_from_last_pin_to_fab_y_mm)
+        # Variant properties
+        device.pins = self.__deserialize_single_value(device_config, 'pins', device.pins)
+        device.description_prefix = self.__deserialize_single_value(device_config, 'description_prefix', device.description_prefix)
+        device.additional_keywords = self.__deserialize_single_value(device_config, 'additional_keywords', device.additional_keywords)
+        device.datasheet = self.__deserialize_single_value(device_config, 'datasheet', device.datasheet)
 
     def __deserialize_variants(self, device, device_config):
         for variant_config in device_config['variants']:
-            variant = Variant()
-            self.__deserialize_variant(variant, variant_config)
-            device.variants.append(variant)
+            device_copy = copy.copy(device)
+            self.__deserialize_variant(device_copy, variant_config)
+            self.devices.append(device_copy)
 
     def __deserialize_variant(self, variant, variant_config):
-        variant.pins = variant_config['pins']
-        variant.description_prefix = variant_config['description_prefix']
-        variant.additional_keywords = variant_config['additional_keywords']
-        variant.datasheet = variant_config['datasheet']
-        try: variant.fab_x_mm = variant_config['fab_x_mm']
-        except KeyError: variant.fab_x_mm = None
+        self.__deserialize_device(variant, variant_config)
+
+
+class Footprint(object):
+
+    def __init__(self):
+        self.pins = [(0, 0)]
+        self.fabric = (0, 0)
+
+
+class FootprintBuilder(object):
+
+    def __init__(self):
+        self.footprints = []
 
 
 class FootprintSerializer(object):
