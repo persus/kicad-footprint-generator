@@ -6,31 +6,28 @@
 #
 
 series: THT-1.27mm_Socket_Vertical
-body:
-    pattern: 1.27
-    overlengthX: 0.415
-    overlengthY: 0.0
-#    width: 2.54
-#    height: 4.4
-#    overlength: 0.0
-#    offset: 0.0
+pitch: 1.27
+pinStyle: Straight
 pins:
     minCols: 1
     maxCols: 40
     minRows: 1
     maxRows: 2
-#    min: 1
-#    max: 40
-#    width: 0.5
-#    thickness: 0.2
-#    drill: 0.7
-#    length: 2.4
-#    offset: 0.0
-pads:
-    length: 1.0
-    width: 1.0
-    lp_width: 0
-datasheet: from Kicad 4.0.7
+SMD:
+    padLength: 2.4
+    padWidth: 0.74
+    referncePad: 0
+    datasheet: 
+THT:
+    holeSize: 0.65
+    padSize: 1.0
+    referencePad: 1
+    datasheet: from Kicad 4.0.7
+socketBody:
+    overlengthX: 0.415
+    overlengthY: 0.0
+headerBody:
+
 ---
 series: THT-1x1.00mm_Vertical
 body:
