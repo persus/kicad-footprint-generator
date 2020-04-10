@@ -5,11 +5,19 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Aktuelle Datei",
+      "name": "TO_SOT_Packages_SMD",
       "type": "python",
       "request": "launch",
       "program": "${file}",
       "cwd": "~/repos/kicad/footprint-generator/scripts/Packages/TO_SOT_Packages_SMD",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "PinSocket",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "~/repos/kicad/footprint-generator/scripts/Connector_PinSocket",
       "console": "integratedTerminal"
     }
   ]
