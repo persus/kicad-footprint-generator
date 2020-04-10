@@ -7,7 +7,7 @@
 
 series: THT-1.27mm_Socket_Vertical
 pitch: 1.27
-pinStyle: Straight
+pinStyle: Vertical
 pins:
     minCols: 1
     maxCols: 40
@@ -16,6 +16,7 @@ pins:
 SMD:
     padLength: 2.4
     padWidth: 0.74
+    padOffset: 0.0
     referncePad: 0
     datasheet: 
 THT:
