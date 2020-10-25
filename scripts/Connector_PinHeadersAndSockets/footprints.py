@@ -28,16 +28,35 @@ class PinStyle(Enum):
 
 
 class Pad(object):
-  pass
+
+  def __init__(self):
+    self.padStyle: CaseType = None
+    self.xPos = 0.0
+    self.yPos = 0.0
+    self.size1 = 0.0
+    self.size2 = 0.0
+    self.pinNumber = -1
+
+
+class PadTHT(Pad):
+
+  def __init__(self):
+    self.padStyle = CaseType.THT
+
+
+class PadSMD(Pad):
+
+  def __init__(self):
+    self.padStyle = CaseType.SMD
 
 
 class FootPrint(object):
 
   def __init__(self):
     self.name = ""
-#    self.reference = ""
     self.description = ""
-    self keywords = ""
+    self.keywords = ""
+    #self.reference = ""
 
     self.caseDirection: CaseDirection = 1
     self.caseType: CaseType = None
@@ -66,7 +85,7 @@ class FootPrintSMD(FootPrint):
     self.caseType = CaseType.SMD
     super().__init__()
     if self.pinStyle is PinStyle.HORIZONTAL:
-      raise SMDfootprintsCannotBeOfAngledPinStyle
+      raise SMDfootprintsCannotBeOfAngledPinStyle()
 
 
 class FootPrintTHT(FootPrint):
@@ -104,10 +123,10 @@ class PinBuilder(object):
     self.__buildRows__()
 
   def __calcOffsetX__(self):
-    pass
+    self.offsetX = self.params["padOffset"]
 
   def __calcOffsetY__(self):
-    pass
+    self.offsetY = 0.0
 
   def __calcDirection__(self):
     self.footprint.caseDirection = self.direction
@@ -120,10 +139,43 @@ class PinBuilder(object):
   def __buildCols__(self, xCoord):
     for index in range (0, self.colCount):
       yCoord = self.offsetY - index * self.footprint.pitch
-      self.__buildPin__(xCoord, yCoord)
+      self.__buildPad__(xCoord, yCoord)
 
-  def __buildPin__(self, xCoord, yCoord):
-    pass
+  def __CreateNewPad__(self):
+    return None
+
+  def __buildPad__(self, xCoord, yCoord):
+    pad: Pad = self.__CreateNewPad__()
+    pad.xPos = xCoord
+    pad.yPos = yCoord
+    return pad
+
+
+class PinBuilderTHT(PinBuilder):
+
+  def __CreateNewPad__(self):
+    return PadTHT()
+
+  def __buildPad__(self, xCoord, yCoord):
+    pad: Pad = super().__buildPad__()
+    pad.size1 = self.params["holeSize"]
+    pad.size2 = self.params["padSize"]
+    return pad
+
+
+class PinBuilderSMD(PinBuilder):
+
+  def __calcOffsetY__(self):
+    self.offsetY = ((self.colCount - 1) / 2) * self.footprint.pitch
+
+  def __CreateNewPad__(self):
+    return PadSMD()
+
+  def __buildPad__(self, xCoord, yCoord):
+    pad: Pad = super().__buildPad__()
+    pad.size1 = self.params["padLength"]
+    pad.size2 = self.params["padWidth"]
+    return pad
 
 
 class BodyBuilder(object):

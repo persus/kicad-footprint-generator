@@ -22,13 +22,15 @@ SMD:
 THT:
     holeSize: 0.65
     padSize: 1.0
+    padOffset: 0.0
     referencePad: 1
     datasheet: from Kicad 4.0.7
 socketBody:
     overlengthX: 0.415
     overlengthY: 0.0
 headerBody:
-
+    overlengthX: 0.415
+    overlengthY: 0.0
 ---
 series: THT-1x1.00mm_Vertical
 body:
